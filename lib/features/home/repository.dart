@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quiz/core/constants.dart';
 
 class HomeRepository {
-  Future<List<String>> getSubjects() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+  Future<List<String>> getSubjects(String token) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? token = prefs.getString('token');
 
-    if (token == null) {
-      throw Exception('No token found');
-    }
+    // if (token == null) {
+    //   throw Exception('No token found');
+    // }
 
     final response = await http.get(
       Uri.parse(baseUrl + subjectsEndpoint),

@@ -4,9 +4,11 @@ import 'repository.dart';
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository = AuthRepository();
   String? _token;
+  String? _refresh;
   bool _isLoading = false;
 
   String? get token => _token;
+  String? get refresh => _refresh;
   bool get isLoading => _isLoading;
 
   void setLoading(bool value) {
@@ -20,6 +22,17 @@ class AuthViewModel extends ChangeNotifier {
     setLoading(false);
     notifyListeners();
     return _token != null;
+  }
+
+  Future<bool> refreshToken(String refresh) async {
+    Map<String, String?> tokens = await _authRepository.refresh(refresh);
+    if (_token != null && _refresh != null) {
+      _token = tokens['token'];
+      _refresh = tokens['refresh'];
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
   Future<bool> register(String username, String password, String email) async {
@@ -37,7 +50,10 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> loadToken() async {
-    _token = await _authRepository.getToken();
+    Map<String, String?> tokens = await _authRepository.getToken();
+    _token = tokens['token'];
+    _refresh = tokens['refresh'];
+
     notifyListeners();
   }
 }

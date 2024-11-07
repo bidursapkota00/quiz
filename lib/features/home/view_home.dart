@@ -14,7 +14,12 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<HomeViewModel>(context, listen: false).loadSubjects();
+    AuthViewModel authProvider =
+        Provider.of<AuthViewModel>(context, listen: false);
+    String? token = authProvider.token;
+    String? refresh = authProvider.refresh;
+    Provider.of<HomeViewModel>(context, listen: false)
+        .loadSubjects(token ?? '', refresh ?? '', authProvider);
   }
 
   @override
@@ -34,7 +39,6 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Consumer<HomeViewModel>(
         builder: (context, homeViewModel, child) {
-          // Check if auth error occurred
           if (homeViewModel.authError) {
             // Redirect to login page if authentication fails
             Future.microtask(() {

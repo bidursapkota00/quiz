@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/features/auth/viewmodel.dart';
 import 'repository.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -11,11 +12,17 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get authError => _authError;
 
-  Future<void> loadSubjects() async {
+  Future<void> loadSubjects(
+      String token, String refresh, AuthViewModel authProvider) async {
     try {
-      _subjects = await _homeRepository.getSubjects();
-    } catch (e) {
-      _authError = true; // Set auth error flag if an exception occurs
+      _subjects = await _homeRepository.getSubjects(token);
+    } catch (error) {
+      try {
+        await authProvider.refreshToken(refresh);
+        _subjects = await _homeRepository.getSubjects(authProvider.token ?? '');
+      } catch (e) {
+        _authError = true;
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
